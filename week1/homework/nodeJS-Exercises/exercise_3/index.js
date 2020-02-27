@@ -3,13 +3,15 @@ let fs = require('fs');
 
 //create a server
 let server = http.createServer(function (req, res) {
-  res.writeHead(200, { 'Content-Type': 'text/html' });
+  
   
 
   if (req.url === '/script.js') { 
     // res.write(`document .getElementById('content') .appendChild(document.createTextNode('Welcome to Server-land!'))`);
+    res.writeHead(200, { 'Content-Type': 'application/javascript' });
     res.write(fs.readFileSync('script.js'));
   } else {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
     res.write(`<html>
       <head>
         <title>My First Web Server</title>
