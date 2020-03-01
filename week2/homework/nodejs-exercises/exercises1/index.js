@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require("fs");
+const path = require('path');
 
 const app = express();
 
@@ -15,18 +16,18 @@ app.get('/', (req, res) => {
 app.post('/blogs', (req, res) => {
   
   // How to get the tile and content from the request??
-  const { title, content } = req.body.title;
+  const { title, content } = req.body;
 
-  fs.writeFileSync(title, content);
+  fs.writeFileSync(path.join(__dirname, "posts" ,title), content);
   res.end('ok');
 });
 
 app.put('/blogs', (req, res) => {
   // How to get the tile and content from the request??
-  const { title, content } = req.body.title;
+  const { title, content } = req.body;
 
-  if (fs.existsSync(title)) {
-    fs.writeFileSync(title, content);
+  if (fs.existsSync(path.join(__dirname, "posts",  title))) {
+    fs.writeFileSync(path.join(__dirname, "posts",  title) , content);
     res.end('ok')
   } else {
     res.end('post does not exist');
@@ -36,16 +37,25 @@ app.put('/blogs', (req, res) => {
 app.delete('/blogs/:title', (req, res) => {
   // How to get the tilte from the url parameters?
   const title = req.params.title;
-
-  fs.unlinkSync(title);
-  res.end('ok');
+  if (fs.existsSync(path.join(__dirname, "posts", title))) {
+    fs.unlinkSync(path.join(__dirname, "posts", title));
+    res.end("ok");
+  } else {
+    res.end("post does not exist");
+  }
 });
 
 app.get('/blogs/:title', (req, res) => {
   // How to get the tilte from the url parameters?
   const title = req.params.title;
 
-  res.sendfile(title);
+  res.sendFile( path.join(__dirname,'posts', title),
+    {
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }
+);
 });
 
 app.listen(port, () => console.log(`Server is started at the port ${port}.`));
